@@ -6,6 +6,7 @@ namespace Dock\AltGenerator\Laravel\Console;
 
 use Dock\AltGenerator\Exception\AltGeneratorException;
 use Dock\AltGenerator\Laravel\AltText;
+use Dock\AltGenerator\Laravel\Console\Concerns\ReadsInput;
 use Illuminate\Console\Command;
 
 /**
@@ -13,6 +14,8 @@ use Illuminate\Console\Command;
  */
 final class GenerateCommand extends Command
 {
+    use ReadsInput;
+
     protected $signature = 'dockaccess-alt:generate
         {path : A path on --disk, or an absolute path inside allowed_directories}
         {--disk= : A Storage disk to read the image from}
@@ -25,18 +28,18 @@ final class GenerateCommand extends Command
 
     public function handle(AltText $altText): int
     {
+        $variants = $this->stringOption('variants');
         $options = array_filter([
-            'language' => $this->option('language'),
-            'tone' => $this->option('tone'),
-            'context' => $this->option('context'),
-            'variants' => (int) $this->option('variants'),
-        ], static fn ($value) => $value !== null && $value !== '');
+            'language' => $this->stringOption('language'),
+            'tone' => $this->stringOption('tone'),
+            'context' => $this->stringOption('context'),
+        ], static fn (?string $value) => $value !== null) + ['variants' => is_numeric($variants) ? (int) $variants : 1];
 
-        $path = (string) $this->argument('path');
-        $disk = $this->option('disk');
+        $path = $this->stringArgument('path');
+        $disk = $this->stringOption('disk');
 
         try {
-            $result = is_string($disk) && $disk !== ''
+            $result = $disk !== null
                 ? $altText->generateFromDisk($path, $disk, $options)
                 : $altText->generate($path, $options);
         } catch (AltGeneratorException $e) {

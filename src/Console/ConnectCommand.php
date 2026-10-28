@@ -11,6 +11,7 @@ use Dock\AltGenerator\Exception\AltGeneratorException;
 use Dock\AltGenerator\Exception\ConnectionException;
 use Dock\AltGenerator\Laravel\AltGeneratorServiceProvider;
 use Dock\AltGenerator\Laravel\Console\Concerns\ExplainsConnectionErrors;
+use Dock\AltGenerator\Laravel\Console\Concerns\ReadsInput;
 use Dock\AltGenerator\Laravel\ConnectionGuard;
 use Dock\AltGenerator\Laravel\Support\EnvironmentFile;
 use Illuminate\Console\Command;
@@ -24,6 +25,7 @@ use Illuminate\Console\Command;
 final class ConnectCommand extends Command
 {
     use ExplainsConnectionErrors;
+    use ReadsInput;
 
     public const SYSTEM = 'laravel';
 
@@ -38,10 +40,10 @@ final class ConnectCommand extends Command
 
     public function handle(ConnectionClient $client, ConnectionGuard $guard): int
     {
-        $token = trim((string) ($this->option('token') ?: $this->ask('Site token (alt generator tab of the site in your account)')));
-        $login = trim((string) ($this->option('login') ?: $this->ask('E-mail address of the dockaccess.org account')));
-        $password = (string) (getenv('DOCKACCESS_PASSWORD') ?: ($this->input->isInteractive() ? $this->secret('Password') : ''));
-        $url = (string) ($this->option('url') ?: config('app.url'));
+        $token = $this->optionOrAsk('token', 'Site token (alt generator tab of the site in your account)');
+        $login = $this->optionOrAsk('login', 'E-mail address of the dockaccess.org account');
+        $password = $this->password();
+        $url = $this->stringOption('url') ?? (string) config('app.url');
 
         try {
             $request = ConnectRequest::create($token, $login, $password, self::SYSTEM, $url)

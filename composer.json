@@ -1,0 +1,68 @@
+{
+    "name": "dockcodes/dockaccess-alt-generator-laravel",
+    "type": "library",
+    "description": "Laravel integration of the dockaccess.org AI alt text generator: connection to the account, a facade, a validation rule, a queued job and Artisan commands.",
+    "keywords": [
+        "laravel",
+        "accessibility",
+        "alt text",
+        "wcag",
+        "dockaccess",
+        "image",
+        "ai"
+    ],
+    "homepage": "https://dockaccess.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dock",
+            "homepage": "https://dock.eu"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "dockcodes/dockaccess-alt-generator": "^1.1",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/http": "^12.0|^13.0",
+        "illuminate/queue": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "orchestra/testbench": "^10.0|^11.0",
+        "phpunit/phpunit": "^11.0|^12.0"
+    },
+    "suggest": {
+        "ext-gd": "Re-encodes every image before upload (pixels only: no metadata, no appended data) and scales it down."
+    },
+    "autoload": {
+        "psr-4": {
+            "Dock\\AltGenerator\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dock\\AltGenerator\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dock\\AltGenerator\\Laravel\\AltGeneratorServiceProvider"
+            ],
+            "aliases": {
+                "AltText": "Dock\\AltGenerator\\Laravel\\Facades\\AltText"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=512M"
+    }
+}
